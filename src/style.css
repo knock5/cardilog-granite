@@ -8,5 +8,146 @@ html {
 body {
   font-family: sans-serif;
   padding: 2rem;
-  background-color: #d2e1ff;
+  background-color: #e6e6e6;
+}
+
+/* General style */
+table.dataTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  background-color: white;
+  border-radius: 6px;
+  overflow: hidden;
+  font-size: 14px;
+}
+
+/* transaction btn */
+.center-btn {
+  display: flex;
+  justify-content: center;
+  margin: 1.5rem 0;
+}
+
+.btn-add {
+  background-color: #2563eb; /* biru cerah */
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.btn-add:hover {
+  background-color: #1e40af;
+  transform: scale(1.03);
+}
+
+/* Table headers */
+table.dataTable thead th {
+  background-color: #1f2937;
+  color: #f9fafb;
+  padding: 12px;
+  text-align: center;
+  font-weight: 600;
+  border-bottom: 1px solid #ddd;
+}
+
+/* Seluruh isi kolom kecuali kolom pertama */
+table.dataTable tbody td:nth-child(n + 2) {
+  text-align: center;
+}
+
+/* Table body rows */
+table.dataTable tbody td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #e5e7eb;
+  color: #111827;
+}
+
+/* Hover effect */
+table.dataTable tbody tr:hover {
+  background-color: #f3f4f6;
+}
+
+/* DataTables pagination + search */
+.dataTables_wrapper .dataTables_filter input {
+  border: 1px solid #d1d5db;
+  padding: 6px 10px;
+  border-radius: 4px;
+  margin-left: 0.5em;
+}
+
+.dataTables_wrapper .dataTables_paginate {
+  margin-top: 1rem;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+  background: #e5e7eb;
+  border: none;
+  padding: 6px 12px;
+  margin: 2px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+  background: #1f2937;
+  color: #fff !important;
+}
+
+.dataTables_wrapper .dataTables_length select {
+  padding: 4px 6px;
+  border-radius: 4px;
+  border: 1px solid #d1d5db;
+}
+
+/* form transaction */
+.form-box {
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 16px;
+  background-color: #fff;
+  margin: 1.5rem auto;
+  max-width: 500px;
+  display: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 12px;
+}
+
+.form-group label {
+  font-weight: 600;
+  font-size: 12px;
+  margin-bottom: 4px;
+  color: #374151;
+}
+
+.form-group input,
+.form-group select {
+  padding: 8px 10px;
+  font-size: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+}
+
+#submit-transaction {
+  padding: 10px 16px;
+  background-color: #1f2937;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#submit-transaction:hover {
+  background-color: #111827;
 }
