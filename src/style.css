@@ -48,13 +48,18 @@ table.dataTable {
 }
 
 /* Table headers */
-table.dataTable thead th {
+table.dataTable thead tr th {
   background-color: #1f2937;
   color: #f9fafb;
-  padding: 12px;
   text-align: center;
   font-weight: 600;
   border-bottom: 1px solid #ddd;
+}
+
+table.dataTable tbody td:nth-child(1) {
+  text-align: center;
+  font-weight: 600;
+  color: #374151;
 }
 
 /* Seluruh isi kolom kecuali kolom pertama */
@@ -106,6 +111,23 @@ table.dataTable tbody tr:hover {
   border: 1px solid #d1d5db;
 }
 
+/* Tabel detail bin card thead rata tengah */
+#detail-table thead th {
+  text-align: center;
+}
+
+/* Seluruh isi kolom bin card kecuali kolom Tanggal */
+#detail-table tbody td:nth-child(n + 2) {
+  text-align: center;
+}
+
+/* Kolom ID Produk juga rata tengah */
+#detail-table tbody td:nth-child(1) {
+  text-align: center;
+  font-weight: 600;
+  color: #1f2937;
+}
+
 /* form transaction */
 .form-box {
   border: 1px solid #d1d5db;
@@ -150,4 +172,58 @@ table.dataTable tbody tr:hover {
 
 #submit-transaction:hover {
   background-color: #111827;
+}
+
+/* detail product (binCard) */
+.detail-box {
+  margin-top: 2rem;
+  background-color: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.detail-box h2 {
+  margin-bottom: 1rem;
+  font-size: 18px;
+  color: #111827;
+}
+
+.btn-detail {
+  padding: 6px 12px;
+  background-color: #4b5563;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-detail:hover {
+  background-color: #1f2937;
+}
+
+/* Button styles for edit and delete */
+.btn-edit-product,
+.btn-delete-product,
+.btn-edit-bincard,
+.btn-delete-bincard {
+  font-size: 12px;
+  margin: 0 2px;
+  padding: 4px 8px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-edit-product,
+.btn-edit-bincard {
+  background-color: #eab308;
+  color: white;
+}
+
+.btn-delete-product,
+.btn-delete-bincard {
+  background-color: #dc2626;
+  color: white;
 }
