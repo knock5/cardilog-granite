@@ -5,6 +5,7 @@ import "datatables.net";
 import "datatables.net-dt/css/dataTables.dataTables.min.css";
 import { dummyProducts } from "./data/products";
 import { saveProducts, getProducts, initProducts } from "./utils/storage";
+import { handlePrediction } from "./utils/predict";
 
 // set data awal jika belum ada di localStorage
 initProducts(dummyProducts);
@@ -13,6 +14,49 @@ const getToday = () => {
   const now = new Date();
   return now.toISOString().split("T")[0]; // format YYYY-MM-DD
 };
+
+// Markdown to HTML converter
+function markdownToHtml(text) {
+  return text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+}
+
+// format text insight dari AI
+function formatInsight(text) {
+  if (!text || typeof text !== "string") {
+    return "<div class='prediction-item'>Loading...</div>";
+  }
+
+  const lines = text.split("\n").filter((line) => line.trim() !== "");
+  let html = "";
+
+  lines.forEach((line) => {
+    const trimmed = markdownToHtml(line.trim());
+
+    // Format Judul/Poin seperti "1. xxx"
+    const numbered = trimmed.match(/^(\d+)\.\s+(.*)/);
+    if (numbered) {
+      html += `<div class="prediction-item numbered"><strong>${numbered[1]}.</strong> ${numbered[2]}</div>`;
+    }
+
+    // Estimasi, Saran, Rata-rata, dll
+    else if (/estimasi|restock|saran|rata-rata|tendensi/i.test(trimmed)) {
+      html += `<div class="prediction-item highlight">${trimmed}</div>`;
+    }
+
+    // Label: Value
+    else if (trimmed.includes(":")) {
+      const [key, value] = trimmed.split(/:(.+)/);
+      html += `<div class="prediction-item"><strong>${key.trim()}:</strong> ${value.trim()}</div>`;
+    }
+
+    // Default paragraf biasa
+    else {
+      html += `<div class="prediction-item">${trimmed}</div>`;
+    }
+  });
+
+  return html;
+}
 
 const renderProducts = () => {
   const products = getProducts();
@@ -87,6 +131,9 @@ const renderProducts = () => {
               <button class="btn-delete-product" data-id="${
                 p.id
               }">Hapus</button>
+              <button class="btn-predict" data-id="${p.id}">
+                Prediksi <span class="loading-spinner" id="loading-predict" style="display: none;"></span>
+              </button>
             </td>
           </tr>
         `
@@ -96,6 +143,18 @@ const renderProducts = () => {
     </table>
 
     <div id="detail-view" class="detail-box" style="display: none;"></div>
+
+    <div id="prediction-result" class="detail-box prediction-box" style="display: none;">
+      <div class="prediction-header">
+        <h3>📊 Prediksi Produk</h3>
+        <button class="btn-close" id="close-predict">Tutup</button>
+      </div>
+      <div class="prediction-result-box">
+        <p><strong>📌 Rata-rata 7 hari terakhir:</strong> ...</p>
+        <p><strong>🤖 Insight AI:</strong></p>
+        <pre class="prediction-text">Output dari Granite AI...</pre>
+      </div>
+    </div>
 
     <div id="edit-product-modal" class="modal" style="display: none;">
       <div class="modal-content">
@@ -452,6 +511,66 @@ const renderProducts = () => {
       // Re-inisialisasi datatable detail
       $("#detail-table").DataTable();
     });
+  });
+
+  // listener untuk prediksi
+  document.querySelectorAll(".btn-predict").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const pid = parseInt(btn.getAttribute("data-id"));
+      const box = document.getElementById("prediction-result");
+      const spinner = btn.querySelector(".loading-spinner");
+
+      // Tampilkan spinner di tombol
+      spinner.style.display = "inline-block";
+
+      // Reset isi dan tampilkan kontainer hasil
+      box.innerHTML = `
+      <div class="prediction-header">
+        <h3>📊 Prediksi Produk</h3>
+        <button class="btn-close" id="close-predict">Tutup</button>
+      </div>
+      <div class="prediction-result-box">
+        <p><strong>📌 Rata-rata 7 hari terakhir:</strong> <em>memuat...</em></p>
+        <p><strong>🤖 Insight AI:</strong></p>
+        <pre class="prediction-text">Memproses insight dari AI... ${formatInsight(
+          insight
+        )}</pre>
+      </div>
+    `;
+      box.style.display = "block";
+
+      // Lakukan prediksi
+      const result = await handlePrediction(pid);
+
+      // Sembunyikan spinner
+      spinner.style.display = "none";
+
+      const avg = result?.average ?? "-";
+      const insight = result?.insight ?? "❌ Gagal mengambil insight dari AI.";
+
+      // Update isi hasil
+      box.innerHTML = `
+      <div class="prediction-header">
+        <h3>📊 Prediksi Produk</h3>
+        <button class="btn-close" id="close-predict">Tutup</button>
+      </div>
+      <div class="prediction-result-box">
+        <p><strong>📌 Rata-rata 7 hari terakhir:</strong> ${avg}</p>
+        <p><strong>🤖 Insight AI:</strong></p>
+        <pre class="prediction-text">${insight}</pre>
+      </div>
+    `;
+
+      // Scroll ke bawah
+      window.scrollTo({ top: box.offsetTop - 40, behavior: "smooth" });
+    });
+  });
+
+  // Listener tombol "Tutup"
+  document.addEventListener("click", (e) => {
+    if (e.target && e.target.id === "close-predict") {
+      document.getElementById("prediction-result").style.display = "none";
+    }
   });
 };
 

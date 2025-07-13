@@ -22,7 +22,7 @@ table.dataTable {
   font-size: 14px;
 }
 
-/* transaction btn */
+/* Tombol tambah transaksi */
 .center-btn {
   display: flex;
   justify-content: center;
@@ -30,7 +30,7 @@ table.dataTable {
 }
 
 .btn-add {
-  background-color: #2563eb; /* biru cerah */
+  background-color: #2563eb;
   color: #fff;
   font-size: 16px;
   font-weight: 600;
@@ -62,24 +62,21 @@ table.dataTable tbody td:nth-child(1) {
   color: #374151;
 }
 
-/* Seluruh isi kolom kecuali kolom pertama */
 table.dataTable tbody td:nth-child(n + 2) {
   text-align: center;
 }
 
-/* Table body rows */
 table.dataTable tbody td {
   padding: 10px 12px;
   border-bottom: 1px solid #e5e7eb;
   color: #111827;
 }
 
-/* Hover effect */
 table.dataTable tbody tr:hover {
   background-color: #f3f4f6;
 }
 
-/* DataTables pagination + search */
+/* DataTables UI */
 .dataTables_wrapper .dataTables_filter input {
   border: 1px solid #d1d5db;
   padding: 6px 10px;
@@ -111,24 +108,22 @@ table.dataTable tbody tr:hover {
   border: 1px solid #d1d5db;
 }
 
-/* Tabel detail bin card thead rata tengah */
+/* Detail table bin card */
 #detail-table thead th {
   text-align: center;
 }
 
-/* Seluruh isi kolom bin card kecuali kolom Tanggal */
 #detail-table tbody td:nth-child(n + 2) {
   text-align: center;
 }
 
-/* Kolom ID Produk juga rata tengah */
 #detail-table tbody td:nth-child(1) {
   text-align: center;
   font-weight: 600;
   color: #1f2937;
 }
 
-/* form transaction */
+/* Form transaksi */
 .form-box {
   border: 1px solid #d1d5db;
   border-radius: 8px;
@@ -174,7 +169,7 @@ table.dataTable tbody tr:hover {
   background-color: #111827;
 }
 
-/* detail product (binCard) */
+/* Box detail */
 .detail-box {
   margin-top: 2rem;
   background-color: #fff;
@@ -203,7 +198,7 @@ table.dataTable tbody tr:hover {
   background-color: #1f2937;
 }
 
-/* modal-edit form */
+/* Modal edit */
 .modal {
   position: fixed;
   top: 0;
@@ -216,21 +211,24 @@ table.dataTable tbody tr:hover {
   background: rgba(0, 0, 0, 0.4);
   z-index: 1000;
 }
+
 .modal-content {
   background: white;
   padding: 20px;
   border-radius: 8px;
   min-width: 300px;
 }
+
 .modal-actions {
   margin-top: 1rem;
   text-align: right;
 }
+
 .modal-actions button {
   margin-left: 10px;
 }
 
-/* Button styles for edit and delete */
+/* Tombol edit/delete */
 .btn-edit-product,
 .btn-delete-product,
 .btn-edit-bincard,
@@ -253,4 +251,125 @@ table.dataTable tbody tr:hover {
 .btn-delete-bincard {
   background-color: #dc2626;
   color: white;
+}
+
+/* 🔮 Prediksi & AI Result */
+.prediction-box {
+  margin-top: 2rem;
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 16px 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
+  max-width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.prediction-box h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 1rem;
+}
+
+.prediction-result-box {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.prediction-text {
+  background-color: #f9fafb;
+  padding: 12px;
+  font-size: 13px;
+  font-family: "Courier New", monospace;
+  white-space: pre-wrap;
+  word-break: break-word;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+/* Spinner loading */
+.loading-spinner {
+  width: 12px;
+  height: 12px;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #2563eb;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  display: inline-block;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Header prediksi */
+.prediction-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+/* Tombol close prediksi */
+.btn-close {
+  background: #f87171;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background 0.2s ease;
+}
+
+.btn-close:hover {
+  background: #ef4444;
+}
+.prediction-text {
+  margin-top: 1rem;
+  background-color: #f9fafb;
+  padding: 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: #1f2937;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.prediction-item {
+  margin-bottom: 12px;
+}
+
+.prediction-item strong {
+  font-weight: 600;
+  color: #111827;
+}
+
+.prediction-item.numbered {
+  padding-left: 4px;
+  border-left: 3px solid #3b82f6;
+  background-color: #eff6ff;
+  border-radius: 4px;
+  padding: 6px 12px;
+}
+
+.prediction-item.highlight {
+  background-color: #fef9c3;
+  padding: 6px 12px;
+  border-left: 4px solid #facc15;
+  border-radius: 4px;
+  font-weight: 600;
 }

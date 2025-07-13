@@ -13,6 +13,12 @@ module.exports = {
     static: "./dist",
     port: 8008,
     open: true,
+    proxy: [
+      {
+        context: ["/api"],
+        target: "http://localhost:3000",
+      },
+    ],
   },
   module: {
     rules: [
