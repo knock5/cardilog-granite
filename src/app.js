@@ -96,6 +96,43 @@ const renderProducts = () => {
     </table>
 
     <div id="detail-view" class="detail-box" style="display: none;"></div>
+
+    <div id="edit-product-modal" class="modal" style="display: none;">
+      <div class="modal-content">
+        <h3>Edit Produk</h3>
+        <label>Nama</label>
+        <input type="text" id="edit-prod-name" />
+        <label>Packing</label>
+        <input type="text" id="edit-prod-pack" />
+        <label>Unit</label>
+        <input type="text" id="edit-prod-unit" />
+        <label>Consumption</label>
+        <input type="text" id="edit-prod-cons" />
+        <div class="modal-actions">
+          <button id="cancel-edit-prod">Batal</button>
+          <button id="save-edit-prod">Simpan Perubahan</button>
+        </div>
+      </div>
+    </div>
+    
+    <div id="edit-bin-modal" class="modal" style="display: none;">
+      <div class="modal-content">
+        <h3>Edit Transaksi</h3>
+        <label>Tanggal</label>
+        <input type="date" id="edit-date" />
+        <label>Masuk</label>
+        <input type="number" id="edit-in" />
+        <label>Keluar</label>
+        <input type="number" id="edit-out" />
+        <label>Exp. Date</label>
+        <input type="date" id="edit-exp" />
+        <div class="modal-actions">
+          <button id="cancel-edit">Batal</button>
+          <button id="save-edit">Simpan Perubahan</button>
+        </div>
+      </div>
+    </div>
+
   `;
 
   document
@@ -156,13 +193,56 @@ const renderProducts = () => {
 
   $("#product-table").DataTable();
 
-  // Edit produk (sementara: tampilkan alert, bisa dikembangkan nanti)
+  // Edit produk
   document.querySelectorAll(".btn-edit-product").forEach((btn) => {
     btn.addEventListener("click", () => {
-      const id = parseInt(btn.getAttribute("data-id"));
-      alert(`Fitur edit produk [ID ${id}] belum diimplementasikan.`);
-      // TODO: Nanti buat form edit
+      const pid = parseInt(btn.getAttribute("data-id"));
+      const products = getProducts();
+      const product = products.find((p) => p.id === pid);
+      if (!product) return;
+
+      // Isi form
+      document.getElementById("edit-prod-name").value = product.name;
+      document.getElementById("edit-prod-pack").value = product.packing;
+      document.getElementById("edit-prod-unit").value = product.unit;
+      document.getElementById("edit-prod-cons").value = product.consumption;
+
+      document.getElementById("save-edit-prod").dataset.id = pid;
+      document.getElementById("edit-product-modal").style.display = "flex";
     });
+  });
+
+  // handle save edit produk
+  document.getElementById("save-edit-prod").addEventListener("click", () => {
+    const pid = parseInt(document.getElementById("save-edit-prod").dataset.id);
+    const name = document.getElementById("edit-prod-name").value.trim();
+    const packing = document.getElementById("edit-prod-pack").value.trim();
+    const unit = document.getElementById("edit-prod-unit").value.trim();
+    const consumption = document.getElementById("edit-prod-cons").value.trim();
+
+    const products = getProducts();
+    const product = products.find((p) => p.id === pid);
+    if (!product) return;
+
+    product.name = name;
+    product.packing = packing;
+    product.unit = unit;
+    product.consumption = consumption;
+
+    saveProducts(products);
+    document.getElementById("edit-product-modal").style.display = "none";
+    renderProducts();
+
+    Swal.fire({
+      icon: "success",
+      title: "Produk Diperbarui",
+      timer: 1500,
+      showConfirmButton: false,
+    });
+  });
+
+  document.getElementById("cancel-edit-prod").addEventListener("click", () => {
+    document.getElementById("edit-product-modal").style.display = "none";
   });
 
   // Hapus produk
@@ -281,16 +361,90 @@ const renderProducts = () => {
         });
       });
 
-      // Edit bin card (placeholder)
+      // Edit bin card
       document.querySelectorAll(".btn-edit-bincard").forEach((btn) => {
         btn.addEventListener("click", () => {
-          const pid = btn.getAttribute("data-pid");
-          const index = btn.getAttribute("data-index");
-          alert(
-            `Fitur edit binCard [produk ${pid} - baris ${index}] belum tersedia.`
-          );
-          // TODO: Nanti buatkan form inline/modal
+          const pid = parseInt(btn.getAttribute("data-pid"));
+          const index = parseInt(btn.getAttribute("data-index"));
+          const products = getProducts();
+          const product = products.find((p) => p.id === pid);
+          const target = product?.binCard[index];
+          if (!target) return;
+
+          // Isi form dengan data lama
+          document.getElementById("edit-date").value = target.date;
+          document.getElementById("edit-in").value = target.in;
+          document.getElementById("edit-out").value = target.out;
+          document.getElementById("edit-exp").value = target.expDate;
+
+          // Simpan info aktif
+          document.getElementById("save-edit").dataset.pid = pid;
+          document.getElementById("save-edit").dataset.index = index;
+
+          document.getElementById("edit-bin-modal").style.display = "flex";
         });
+      });
+
+      // cancel edit btn
+      document.getElementById("cancel-edit").addEventListener("click", () => {
+        document.getElementById("edit-bin-modal").style.display = "none";
+      });
+
+      // handle save edit
+      document.getElementById("save-edit").addEventListener("click", () => {
+        const pid = parseInt(document.getElementById("save-edit").dataset.pid);
+        const index = parseInt(
+          document.getElementById("save-edit").dataset.index
+        );
+
+        const date = document.getElementById("edit-date").value;
+        const inputIn = parseInt(document.getElementById("edit-in").value) || 0;
+        const inputOut =
+          parseInt(document.getElementById("edit-out").value) || 0;
+        const expDate = document.getElementById("edit-exp").value;
+
+        const products = getProducts();
+        const product = products.find((p) => p.id === pid);
+        if (!product) return;
+
+        // Hitung saldo baru dari transaksi ini
+        const previousBalance =
+          index > 0 ? product.binCard[index - 1].balance : 0;
+        const newBalance = previousBalance + inputIn - inputOut;
+
+        // Ubah entri di index tertentu
+        product.binCard[index] = {
+          ...product.binCard[index],
+          date,
+          in: inputIn,
+          out: inputOut,
+          expDate,
+          balance: newBalance,
+        };
+
+        // Update saldo ke bawah
+        for (let i = index + 1; i < product.binCard.length; i++) {
+          const prev = product.binCard[i - 1].balance;
+          product.binCard[i].balance =
+            prev + product.binCard[i].in - product.binCard[i].out;
+        }
+
+        saveProducts(products);
+        document.getElementById("edit-bin-modal").style.display = "none";
+
+        Swal.fire({
+          icon: "success",
+          title: "Berhasil",
+          text: "Transaksi berhasil diperbarui!",
+          timer: 1500,
+          showConfirmButton: false,
+        });
+
+        renderProducts();
+
+        setTimeout(() => {
+          document.querySelector(`.btn-detail[data-id="${pid}"]`)?.click();
+        }, 100);
       });
 
       detailBox.style.display = "block";
