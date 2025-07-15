@@ -540,7 +540,7 @@ const renderProducts = () => {
         <div>
           <label for="predict-mode" style="margin-right: 8px; font-size: 13px; font-weight: 500;">Mode:</label>
           <select id="predict-mode">
-            <option value="daily">Harian</option>
+            <option value="weekly">Mingguan</option>
             <option value="monthly">Bulanan</option>
           </select>
           <button class="btn-close" id="close-predict">Tutup</button>
@@ -555,7 +555,7 @@ const renderProducts = () => {
 
       await new Promise((r) => setTimeout(r, 100));
 
-      const mode = document.getElementById("predict-mode")?.value || "daily";
+      const mode = document.getElementById("predict-mode")?.value || "weekly";
       const result = await handlePrediction(pid, mode);
       spinner.style.display = "none";
 
@@ -566,22 +566,10 @@ const renderProducts = () => {
       <div class="prediction-header">
         <h3>📊 Prediksi Produk</h3>
         <div>
-          <label for="predict-mode" style="margin-right: 8px; font-size: 13px; font-weight: 500;">Mode:</label>
-          <select id="predict-mode">
-            <option value="daily" ${
-              mode === "daily" ? "selected" : ""
-            }>Harian</option>
-            <option value="monthly" ${
-              mode === "monthly" ? "selected" : ""
-            }>Bulanan</option>
-          </select>
-          <button class="btn-close" id="close-predict">Tutup</button>
+          <button class="btn-close" id="close-predict">Tutup<button>
         </div>
       </div>
       <div class="prediction-result-box">
-        <p><strong>📌 Mode:</strong> ${
-          mode === "daily" ? "Harian" : "Bulanan"
-        }</p>
         <p><strong>📉 Rata-rata:</strong> ${avg}</p>
         <p><strong>🤖 Insight AI:</strong></p>
         <div class="prediction-text">${formatInsight(insight)}</div>
