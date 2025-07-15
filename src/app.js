@@ -5,52 +5,59 @@ import "datatables.net";
 import "datatables.net-dt/css/dataTables.dataTables.min.css";
 import { dummyProducts } from "./data/products";
 import { saveProducts, getProducts, initProducts } from "./utils/storage";
-import { handlePrediction } from "./utils/predict";
+import { handlePrediction, predictWithGranite } from "./utils/predict";
 
 // set data awal jika belum ada di localStorage
 initProducts(dummyProducts);
 
 const getToday = () => {
   const now = new Date();
-  return now.toISOString().split("T")[0]; // format YYYY-MM-DD
+  return now.toISOString().split("T")[0];
 };
 
-// Markdown to HTML converter
+// Parser markdown-like ke HTML (diperluas)
 function markdownToHtml(text) {
-  return text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+  return text
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>") // Bold
+    .replace(/\*(.+?)\*/g, "<em>$1</em>") // Italic
+    .replace(/^## (.+)$/gm, "<h4>$1</h4>") // Heading
+    .replace(/^- (.+)$/gm, "<ul><li>$1</li></ul>") // List
+    .replace(/<\/ul>\s*<ul>/g, "") // Gabungkan <ul>
+    .replace(/\n{2,}/g, "</p><p>") // Paragraf
+    .replace(/\n/g, "<br>"); // Line break
 }
 
-// format text insight dari AI
+// Format dan parsing teks insight AI
 function formatInsight(text) {
   if (!text || typeof text !== "string") {
-    return "<div class='prediction-item'>Loading...</div>";
+    return "<div class='prediction-item'>Tidak ada insight dari AI.</div>";
   }
 
-  const lines = text.split("\n").filter((line) => line.trim() !== "");
+  // Pastikan split tetap menghasilkan array of string
+  const lines = String(text)
+    .split("\n")
+    .map((line) => (typeof line === "string" ? line : ""))
+    .filter((line) => line.trim() !== "");
+
   let html = "";
 
   lines.forEach((line) => {
     const trimmed = markdownToHtml(line.trim());
 
-    // Format Judul/Poin seperti "1. xxx"
+    // Pola 1. xxx
     const numbered = trimmed.match(/^(\d+)\.\s+(.*)/);
     if (numbered) {
       html += `<div class="prediction-item numbered"><strong>${numbered[1]}.</strong> ${numbered[2]}</div>`;
-    }
-
-    // Estimasi, Saran, Rata-rata, dll
-    else if (/estimasi|restock|saran|rata-rata|tendensi/i.test(trimmed)) {
+    } else if (
+      /estimasi|restock|saran|rata-rata|tendensi|prediksi/i.test(trimmed)
+    ) {
       html += `<div class="prediction-item highlight">${trimmed}</div>`;
-    }
-
-    // Label: Value
-    else if (trimmed.includes(":")) {
+    } else if (trimmed.includes(":")) {
       const [key, value] = trimmed.split(/:(.+)/);
-      html += `<div class="prediction-item"><strong>${key.trim()}:</strong> ${value.trim()}</div>`;
-    }
-
-    // Default paragraf biasa
-    else {
+      html += `<div class="prediction-item"><strong>${key.trim()}:</strong> ${
+        value?.trim() || ""
+      }</div>`;
+    } else {
       html += `<div class="prediction-item">${trimmed}</div>`;
     }
   });
@@ -63,7 +70,9 @@ const renderProducts = () => {
   const container = document.getElementById("app");
 
   container.innerHTML = `
-    <h1>📦 Stock Produk</h1>
+  <div class="brand-wrap flex">
+    <h1>CardiLog</h1>
+  </div>
 
     <div class="center-btn">
       <button id="add-transaction-btn" class="btn-add">+ Tambah Transaksi</button>
@@ -142,8 +151,6 @@ const renderProducts = () => {
       </tbody>
     </table>
 
-    <div id="detail-view" class="detail-box" style="display: none;"></div>
-
     <div id="prediction-result" class="detail-box prediction-box" style="display: none;">
       <div class="prediction-header">
         <h3>📊 Prediksi Produk</h3>
@@ -155,6 +162,8 @@ const renderProducts = () => {
         <pre class="prediction-text">Output dari Granite AI...</pre>
       </div>
     </div>
+
+    <div id="detail-view" class="detail-box" style="display: none;"></div>
 
     <div id="edit-product-modal" class="modal" style="display: none;">
       <div class="modal-content">
@@ -520,48 +529,66 @@ const renderProducts = () => {
       const box = document.getElementById("prediction-result");
       const spinner = btn.querySelector(".loading-spinner");
 
-      // Tampilkan spinner di tombol
+      // Tampilkan spinner
       spinner.style.display = "inline-block";
+      box.style.display = "block";
 
-      // Reset isi dan tampilkan kontainer hasil
+      // Reset isi sementara
       box.innerHTML = `
       <div class="prediction-header">
         <h3>📊 Prediksi Produk</h3>
-        <button class="btn-close" id="close-predict">Tutup</button>
+        <div>
+          <label for="predict-mode" style="margin-right: 8px; font-size: 13px; font-weight: 500;">Mode:</label>
+          <select id="predict-mode">
+            <option value="daily">Harian</option>
+            <option value="monthly">Bulanan</option>
+          </select>
+          <button class="btn-close" id="close-predict">Tutup</button>
+        </div>
       </div>
       <div class="prediction-result-box">
-        <p><strong>📌 Rata-rata 7 hari terakhir:</strong> <em>memuat...</em></p>
+        <p><strong>📌 Mode:</strong> <em>memuat...</em></p>
         <p><strong>🤖 Insight AI:</strong></p>
-        <pre class="prediction-text">Memproses insight dari AI... ${formatInsight(
-          insight
-        )}</pre>
+        <div class="prediction-text">Memproses insight dari AI...</div>
       </div>
     `;
-      box.style.display = "block";
 
-      // Lakukan prediksi
-      const result = await handlePrediction(pid);
+      await new Promise((r) => setTimeout(r, 100));
 
-      // Sembunyikan spinner
+      const mode = document.getElementById("predict-mode")?.value || "daily";
+      const result = await handlePrediction(pid, mode);
       spinner.style.display = "none";
 
       const avg = result?.average ?? "-";
-      const insight = result?.insight ?? "❌ Gagal mengambil insight dari AI.";
+      const insight = result?.insight ?? "Gagal memuat insight.";
 
-      // Update isi hasil
       box.innerHTML = `
       <div class="prediction-header">
         <h3>📊 Prediksi Produk</h3>
-        <button class="btn-close" id="close-predict">Tutup</button>
+        <div>
+          <label for="predict-mode" style="margin-right: 8px; font-size: 13px; font-weight: 500;">Mode:</label>
+          <select id="predict-mode">
+            <option value="daily" ${
+              mode === "daily" ? "selected" : ""
+            }>Harian</option>
+            <option value="monthly" ${
+              mode === "monthly" ? "selected" : ""
+            }>Bulanan</option>
+          </select>
+          <button class="btn-close" id="close-predict">Tutup</button>
+        </div>
       </div>
       <div class="prediction-result-box">
-        <p><strong>📌 Rata-rata 7 hari terakhir:</strong> ${avg}</p>
+        <p><strong>📌 Mode:</strong> ${
+          mode === "daily" ? "Harian" : "Bulanan"
+        }</p>
+        <p><strong>📉 Rata-rata:</strong> ${avg}</p>
         <p><strong>🤖 Insight AI:</strong></p>
-        <pre class="prediction-text">${insight}</pre>
+        <div class="prediction-text">${formatInsight(insight)}</div>
       </div>
     `;
 
-      // Scroll ke bawah
+      // Scroll to result
       window.scrollTo({ top: box.offsetTop - 40, behavior: "smooth" });
     });
   });
