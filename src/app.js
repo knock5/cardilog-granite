@@ -71,13 +71,16 @@ const renderProducts = () => {
   const container = document.getElementById("app");
 
   container.innerHTML = `
-    <div class="brand-wrap flex">
-      <h1>CardiLog</h1>
-    </div>
+    <header class="header-bar">
+      <div class="header-center">
+        <img src="img/cardilog_logo.png" alt="CardiLog Logo" class="logo-img" />
+        <h1 class="brand-text">CardiLog</h1>
+      </div>
+    </header>
 
     <div class="flex center">
-      <button id="add-transaction-btn" class="btn btn-add">+ Tambah Transaksi</button>
-      <button id="add-product-btn" class="btn btn-add" style="margin-left: 10px;">+ Tambah Produk</button>
+      <button id="add-transaction-btn" class="btn btn-add">+ Transaksi</button>
+      <button id="add-product-btn" class="btn btn-add" style="margin-left: 10px;">+ Produk</button>
     </div>
 
     <div class="table-container">
@@ -403,7 +406,9 @@ const renderProducts = () => {
       const detailBox = document.getElementById("detail-view");
 
       detailBox.innerHTML = `
-        <h2>📋 Riwayat Bin Card: ${product.name} - ID: ${product.id}</h2>
+        <span class="title-bincard">📋 Riwayat Bin Card: ${product.name} (ID: ${
+        product.id
+      })</span>
         <table id="detail-table" class="display dataTable">
           <thead>
             <tr>
@@ -656,3 +661,12 @@ const renderProducts = () => {
 };
 
 renderProducts();
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register("service-worker.js")
+      .then((reg) => console.log("Service Worker registered", reg))
+      .catch((err) => console.log("Service Worker failed", err));
+  });
+}
