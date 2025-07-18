@@ -15,7 +15,7 @@ app.post("/api/granite", async (req, res) => {
     const output = await replicate.run("ibm-granite/granite-3.3-8b-instruct", {
       input: {
         prompt,
-        max_tokens: 1500,
+        max_tokens: 2000,
         temperature: 0.6,
         top_k: 50,
         top_p: 0.9,
