@@ -192,25 +192,6 @@ const renderProducts = () => {
         </div>
       </div>
     </div>
-
-    <!-- Modal edit bin card -->
-    <div id="edit-bin-modal" class="modal" style="display: none;">
-      <div class="modal-content">
-        <h3>Edit Transaksi</h3>
-        <label>Tanggal</label>
-        <input type="date" id="edit-date" />
-        <label>Masuk</label>
-        <input type="number" id="edit-in" />
-        <label>Keluar</label>
-        <input type="number" id="edit-out" />
-        <label>Exp. Date</label>
-        <input type="date" id="edit-exp" />
-        <div class="modal-actions">
-          <button id="cancel-edit">Batal</button>
-          <button id="save-edit">Simpan Perubahan</button>
-        </div>
-      </div>
-    </div>
   `;
 
   document
@@ -282,11 +263,11 @@ const renderProducts = () => {
       const { value: formValues } = await Swal.fire({
         title: "Edit Produk",
         html: `
-          <input id="swal-name" class="swal2-input" placeholder="Nama Produk" value="${product.name}">
-          <input id="swal-pack" class="swal2-input" placeholder="Packing" value="${product.packing}">
-          <input id="swal-unit" class="swal2-input" placeholder="Unit" value="${product.unit}">
-          <input id="swal-cons" class="swal2-input" placeholder="Consumption" value="${product.consumption}">
-        `,
+        <input id="swal-name" class="swal2-input" placeholder="Nama Produk" value="${product.name}">
+        <input id="swal-pack" class="swal2-input" placeholder="Packing" value="${product.packing}">
+        <input id="swal-unit" class="swal2-input" placeholder="Unit" value="${product.unit}">
+        <input id="swal-cons" class="swal2-input" placeholder="Consumption" value="${product.consumption}">
+      `,
         focusConfirm: false,
         showCancelButton: true,
         confirmButtonText: "Simpan",
@@ -310,39 +291,6 @@ const renderProducts = () => {
         Swal.fire("Berhasil", "Produk diperbarui", "success");
       }
     });
-  });
-
-  // handle save edit produk
-  document.getElementById("save-edit-prod").addEventListener("click", () => {
-    const pid = parseInt(document.getElementById("save-edit-prod").dataset.id);
-    const name = document.getElementById("edit-prod-name").value.trim();
-    const packing = document.getElementById("edit-prod-pack").value.trim();
-    const unit = document.getElementById("edit-prod-unit").value.trim();
-    const consumption = document.getElementById("edit-prod-cons").value.trim();
-
-    const products = getProducts();
-    const product = products.find((p) => p.id === pid);
-    if (!product) return;
-
-    product.name = name;
-    product.packing = packing;
-    product.unit = unit;
-    product.consumption = consumption;
-
-    saveProducts(products);
-    document.getElementById("edit-product-modal").style.display = "none";
-    renderProducts();
-
-    Swal.fire({
-      icon: "success",
-      title: "Produk Diperbarui",
-      timer: 1500,
-      showConfirmButton: false,
-    });
-  });
-
-  document.getElementById("cancel-edit-prod").addEventListener("click", () => {
-    document.getElementById("edit-product-modal").style.display = "none";
   });
 
   // Hapus produk
@@ -393,7 +341,7 @@ const renderProducts = () => {
               <th>Tanggal</th>
               <th>Masuk</th>
               <th>Keluar</th>
-              <th>Saldo</th>
+              <th>Balance</th>
               <th>Exp. Date</th>
               <th>Aksi</th>
             </tr>
@@ -463,7 +411,7 @@ const renderProducts = () => {
 
       // Edit bin card
       document.querySelectorAll(".btn-edit-bincard").forEach((btn) => {
-        btn.addEventListener("click", () => {
+        btn.addEventListener("click", async () => {
           const pid = parseInt(btn.getAttribute("data-pid"));
           const index = parseInt(btn.getAttribute("data-index"));
           const products = getProducts();
@@ -471,80 +419,76 @@ const renderProducts = () => {
           const target = product?.binCard[index];
           if (!target) return;
 
-          // Isi form dengan data lama
-          document.getElementById("edit-date").value = target.date;
-          document.getElementById("edit-in").value = target.in;
-          document.getElementById("edit-out").value = target.out;
-          document.getElementById("edit-exp").value = target.expDate;
+          const { value: formValues } = await Swal.fire({
+            title: "Edit Transaksi",
+            html: `
+              <label for="swal-date" style="font-size: 12px; display:block; text-align:left; margin-bottom:4px;">📅 Tanggal Transaksi</label>
+              <input id="swal-date" type="date" class="swal2-input" value="${target.date}">
+              
+              <label for="swal-in" style="font-size: 12px; display:block; text-align:left; margin-top:10px; margin-bottom:4px;">📥 Jumlah Masuk</label>
+              <input id="swal-in" type="number" class="swal2-input" placeholder="Masuk" value="${target.in}">
+              
+              <label for="swal-out" style="font-size: 12px; display:block; text-align:left; margin-top:10px; margin-bottom:4px;">📤 Jumlah Keluar</label>
+              <input id="swal-out" type="number" class="swal2-input" placeholder="Keluar" value="${target.out}">
+              
+              <label for="swal-exp" style="font-size: 12px; display:block; text-align:left; margin-top:10px; margin-bottom:4px;">🕒 Tanggal Expired</label>
+              <input id="swal-exp" type="date" class="swal2-input" value="${target.expDate}">
+            `,
 
-          // Simpan info aktif
-          document.getElementById("save-edit").dataset.pid = pid;
-          document.getElementById("save-edit").dataset.index = index;
+            focusConfirm: false,
+            showCancelButton: true,
+            confirmButtonText: "Simpan",
+            cancelButtonText: "Batal",
+            preConfirm: () => {
+              return {
+                date: document.getElementById("swal-date").value,
+                in: parseInt(document.getElementById("swal-in").value) || 0,
+                out: parseInt(document.getElementById("swal-out").value) || 0,
+                expDate: document.getElementById("swal-exp").value,
+              };
+            },
+          });
 
-          document.getElementById("edit-bin-modal").style.display = "flex";
+          if (formValues) {
+            const { date, in: inputIn, out: inputOut, expDate } = formValues;
+
+            // Hitung saldo baru dari transaksi ini
+            const previousBalance =
+              index > 0 ? product.binCard[index - 1].balance : 0;
+            const newBalance = previousBalance + inputIn - inputOut;
+
+            product.binCard[index] = {
+              ...product.binCard[index],
+              date,
+              in: inputIn,
+              out: inputOut,
+              expDate,
+              balance: newBalance,
+            };
+
+            // Update saldo ke bawah
+            for (let i = index + 1; i < product.binCard.length; i++) {
+              const prev = product.binCard[i - 1].balance;
+              product.binCard[i].balance =
+                prev + product.binCard[i].in - product.binCard[i].out;
+            }
+
+            saveProducts(products);
+            renderProducts();
+
+            Swal.fire({
+              icon: "success",
+              title: "Berhasil",
+              text: "Transaksi berhasil diperbarui!",
+              timer: 1500,
+              showConfirmButton: false,
+            });
+
+            setTimeout(() => {
+              document.querySelector(`.btn-detail[data-id="${pid}"]`)?.click();
+            }, 100);
+          }
         });
-      });
-
-      // cancel edit btn
-      document.getElementById("cancel-edit").addEventListener("click", () => {
-        document.getElementById("edit-bin-modal").style.display = "none";
-      });
-
-      // handle save edit
-      document.getElementById("save-edit").addEventListener("click", () => {
-        const pid = parseInt(document.getElementById("save-edit").dataset.pid);
-        const index = parseInt(
-          document.getElementById("save-edit").dataset.index
-        );
-
-        const date = document.getElementById("edit-date").value;
-        const inputIn = parseInt(document.getElementById("edit-in").value) || 0;
-        const inputOut =
-          parseInt(document.getElementById("edit-out").value) || 0;
-        const expDate = document.getElementById("edit-exp").value;
-
-        const products = getProducts();
-        const product = products.find((p) => p.id === pid);
-        if (!product) return;
-
-        // Hitung saldo baru dari transaksi ini
-        const previousBalance =
-          index > 0 ? product.binCard[index - 1].balance : 0;
-        const newBalance = previousBalance + inputIn - inputOut;
-
-        // Ubah entri di index tertentu
-        product.binCard[index] = {
-          ...product.binCard[index],
-          date,
-          in: inputIn,
-          out: inputOut,
-          expDate,
-          balance: newBalance,
-        };
-
-        // Update saldo ke bawah
-        for (let i = index + 1; i < product.binCard.length; i++) {
-          const prev = product.binCard[i - 1].balance;
-          product.binCard[i].balance =
-            prev + product.binCard[i].in - product.binCard[i].out;
-        }
-
-        saveProducts(products);
-        document.getElementById("edit-bin-modal").style.display = "none";
-
-        Swal.fire({
-          icon: "success",
-          title: "Berhasil",
-          text: "Transaksi berhasil diperbarui!",
-          timer: 1500,
-          showConfirmButton: false,
-        });
-
-        renderProducts();
-
-        setTimeout(() => {
-          document.querySelector(`.btn-detail[data-id="${pid}"]`)?.click();
-        }, 100);
       });
 
       detailBox.style.display = "block";
