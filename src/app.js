@@ -78,39 +78,6 @@ const renderProducts = () => {
       <button id="add-transaction-btn" class="btn-add">+ Tambah Transaksi</button>
     </div>
 
-    <div id="transaction-form" class="form-box" style="display: none;">
-      <div class="form-group">
-        <label for="product-select">Produk:</label>
-        <select id="product-select">
-          ${products
-            .map((p) => `<option value="${p.id}">${p.name}</option>`)
-            .join("")}
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label for="trans-date">Tanggal Transaksi:</label>
-        <input type="date" id="trans-date" value="${getToday()}" />
-      </div>
-
-      <div class="form-group">
-        <label for="trans-in">Jumlah Masuk:</label>
-        <input type="number" id="trans-in" placeholder="0" min="0" />
-      </div>
-
-      <div class="form-group">
-        <label for="trans-out">Jumlah Keluar:</label>
-        <input type="number" id="trans-out" placeholder="0" min="0" />
-      </div>
-
-      <div class="form-group">
-        <label for="exp-date">Tanggal Kadaluarsa:</label>
-        <input type="date" id="exp-date" />
-      </div>
-
-      <button id="submit-transaction">Simpan</button>
-    </div>
-
     <!-- Bungkus hanya bagian table -->
     <div class="dataTables_wrapper">
       <div class="table-container">
@@ -196,58 +163,93 @@ const renderProducts = () => {
 
   document
     .getElementById("add-transaction-btn")
-    .addEventListener("click", () => {
-      const form = document.getElementById("transaction-form");
-      form.style.display = form.style.display === "none" ? "block" : "none";
-    });
+    .addEventListener("click", async () => {
+      const products = getProducts();
 
-  document
-    .getElementById("submit-transaction")
-    .addEventListener("click", () => {
-      const id = parseInt(document.getElementById("product-select").value);
-      const date = document.getElementById("trans-date").value;
-      const inputIn = parseInt(document.getElementById("trans-in").value) || 0;
-      const inputOut =
-        parseInt(document.getElementById("trans-out").value) || 0;
-      const expInput = document.getElementById("exp-date").value;
+      const { value: formValues } = await Swal.fire({
+        title: "Tambah Transaksi",
+        html: `
+      <label for="swal-product" style="font-size:12px; display:block; text-align:left; margin-bottom:4px;">📦 Produk</label>
+      <select id="swal-product" class="swal2-input">
+        ${products
+          .map((p) => `<option value="${p.id}">${p.name}</option>`)
+          .join("")}
+      </select>
 
-      const product = products.find((p) => p.id === id);
-      if (!product) return alert("Produk tidak ditemukan.");
+      <label for="swal-date" style="font-size:12px; display:block; text-align:left; margin-top:10px; margin-bottom:4px;">📅 Tanggal Transaksi</label>
+      <input id="swal-date" type="date" class="swal2-input" value="${getToday()}">
 
-      const lastBalance = product.binCard.at(-1)?.balance || 0;
-      if (inputOut > lastBalance) {
-        return alert(
-          `Jumlah keluar (${inputOut}) melebihi saldo (${lastBalance}).`
-        );
+      <label for="swal-in" style="font-size:12px; display:block; text-align:left; margin-top:10px; margin-bottom:4px;">📥 Jumlah Masuk</label>
+      <input id="swal-in" type="number" class="swal2-input" placeholder="0" min="0">
+
+      <label for="swal-out" style="font-size:12px; display:block; text-align:left; margin-top:10px; margin-bottom:4px;">📤 Jumlah Keluar</label>
+      <input id="swal-out" type="number" class="swal2-input" placeholder="0" min="0">
+
+      <label for="swal-exp" style="font-size:12px; display:block; text-align:left; margin-top:10px; margin-bottom:4px;">🕒 Tanggal Kadaluarsa</label>
+      <input id="swal-exp" type="date" class="swal2-input">
+    `,
+        focusConfirm: false,
+        showCancelButton: true,
+        confirmButtonText: "Simpan",
+        cancelButtonText: "Batal",
+        preConfirm: () => {
+          return {
+            id: parseInt(document.getElementById("swal-product").value),
+            date: document.getElementById("swal-date").value,
+            inputIn: parseInt(document.getElementById("swal-in").value) || 0,
+            inputOut: parseInt(document.getElementById("swal-out").value) || 0,
+            expDate: document.getElementById("swal-exp").value,
+          };
+        },
+      });
+
+      if (formValues) {
+        const { id, date, inputIn, inputOut, expDate } = formValues;
+        const products = getProducts();
+        const product = products.find((p) => p.id === id);
+        if (!product)
+          return Swal.fire("Error", "Produk tidak ditemukan.", "error");
+
+        const lastBalance = product.binCard.at(-1)?.balance || 0;
+
+        if (inputOut > lastBalance) {
+          return Swal.fire({
+            icon: "error",
+            title: "Jumlah keluar melebihi saldo!",
+            text: `Keluar: ${inputOut}, Saldo: ${lastBalance}`,
+          });
+        }
+
+        const newBalance = lastBalance + inputIn - inputOut;
+        const finalExp =
+          expDate.trim() !== ""
+            ? expDate
+            : product.binCard.at(-1)?.expDate || "";
+
+        product.binCard.push({
+          date,
+          in: inputIn,
+          out: inputOut,
+          balance: newBalance,
+          expDate: finalExp,
+        });
+
+        saveProducts(products);
+        renderProducts();
+
+        setTimeout(() => {
+          // Toast notifikasi
+          Swal.fire({
+            toast: true,
+            position: "top-end",
+            icon: "success",
+            title: "Transaksi ditambahkan",
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true,
+          });
+        }, 200);
       }
-
-      const expDate =
-        expInput.trim() !== ""
-          ? expInput
-          : product.binCard.at(-1)?.expDate || "";
-
-      const newBalance = lastBalance + inputIn - inputOut;
-
-      product.binCard.push({
-        date,
-        in: inputIn,
-        out: inputOut,
-        balance: newBalance,
-        expDate,
-      });
-
-      saveProducts(products);
-
-      Swal.fire({
-        icon: "success",
-        title: "Berhasil",
-        text: "Transaksi berhasil disimpan!",
-        timer: 1500,
-        showConfirmButton: false,
-      });
-      document.getElementById("transaction-form").style.display = "none";
-
-      renderProducts();
     });
 
   $("#product-table").DataTable();
@@ -514,16 +516,10 @@ const renderProducts = () => {
       <div class="prediction-header">
         <h3>📊 Prediksi Produk</h3>
         <div>
-          <label for="predict-mode" style="margin-right: 8px; font-size: 13px; font-weight: 500;">Mode:</label>
-          <select id="predict-mode">
-            <option value="weekly">Mingguan</option>
-            <option value="monthly">Bulanan</option>
-          </select>
           <button class="btn-close" id="close-predict">Tutup</button>
         </div>
       </div>
       <div class="prediction-result-box">
-        <p><strong>📌 Mode:</strong> <em>memuat...</em></p>
         <p><strong>🤖 Insight AI:</strong></p>
         <div class="prediction-text">Memproses insight dari AI...</div>
       </div>
