@@ -77,6 +77,7 @@ const renderProducts = () => {
 
     <div class="flex center">
       <button id="add-transaction-btn" class="btn btn-add">+ Tambah Transaksi</button>
+      <button id="add-product-btn" class="btn btn-add" style="margin-left: 10px;">+ Tambah Produk</button>
     </div>
 
     <div class="table-container">
@@ -237,6 +238,63 @@ const renderProducts = () => {
             timerProgressBar: true,
           });
         }, 200);
+      }
+    });
+
+  document
+    .getElementById("add-product-btn")
+    .addEventListener("click", async () => {
+      const { value: formValues } = await Swal.fire({
+        title: "Tambah Produk Baru",
+        html: `
+          <label for="swal-name" style="font-size:12px; display:block; text-align:center; margin-bottom:4px;">Nama Produk</label>
+          <input id="swal-name" class="swal2-input" placeholder="Contoh: Beras Medium">
+
+          <label for="swal-pack" style="font-size:12px; display:block; text-align:center; margin-top:10px; margin-bottom:4px;">Packing</label>
+          <input id="swal-pack" class="swal2-input" placeholder="Contoh: 1 kg">
+
+          <label for="swal-unit" style="font-size:12px; display:block; text-align:center; margin-top:10px; margin-bottom:4px;">Unit</label>
+          <input id="swal-unit" class="swal2-input" placeholder="Contoh: pcs">
+
+          <label for="swal-cons" style="font-size:12px; display:block; text-align:center; margin-top:10px; margin-bottom:4px;">Konsumsi Harian (opsional)</label>
+          <input id="swal-cons" class="swal2-input" placeholder="Contoh: 5">
+        `,
+        focusConfirm: false,
+        showCancelButton: true,
+        confirmButtonText: "Tambah",
+        cancelButtonText: "Batal",
+        preConfirm: () => {
+          return {
+            name: document.getElementById("swal-name").value.trim(),
+            packing: document.getElementById("swal-pack").value.trim(),
+            unit: document.getElementById("swal-unit").value.trim(),
+            consumption: document.getElementById("swal-cons").value.trim(),
+          };
+        },
+      });
+
+      if (formValues) {
+        const products = getProducts();
+        const newId = Math.floor(Math.random() * 100000);
+
+        products.push({
+          id: newId,
+          name: formValues.name,
+          packing: formValues.packing,
+          unit: formValues.unit,
+          consumption: formValues.consumption,
+          binCard: [],
+        });
+
+        saveProducts(products);
+        renderProducts();
+
+        Swal.fire({
+          icon: "success",
+          title: "Produk ditambahkan!",
+          timer: 1500,
+          showConfirmButton: false,
+        });
       }
     });
 
