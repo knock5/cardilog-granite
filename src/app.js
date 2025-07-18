@@ -98,14 +98,16 @@ const renderProducts = () => {
                 p.binCard.at(-1)?.balance || 0
               }</td>
               <td>
-                <button class="btn-detail" data-id="${
+                <button class="btn btn-detail" data-id="${
                   p.id
                 }">Lihat Detail</button>
-                <button class="btn-edit-product" data-id="${p.id}">Edit</button>
-                <button class="btn-delete-product" data-id="${
+                <button class="btn btn-edit-product" data-id="${
+                  p.id
+                }">Edit</button>
+                <button class="btn btn-delete-product" data-id="${
                   p.id
                 }">Hapus</button>
-                <button class="btn-predict" data-id="${
+                <button class="btn btn-predict" data-id="${
                   p.id
                 }">Prediksi <span class="loading-spinner" style="display: none;"></span></button>
               </td>
@@ -118,12 +120,12 @@ const renderProducts = () => {
     
     <div id="prediction-result" class="detail-box prediction-box" style="display: none;">
       <div class="prediction-header">
-        <h3>📊 Prediksi Produk</h3>
-        <button class="btn-close" id="close-predict">Tutup</button>
+        <h3>📊 Prediksi Produk Mingguan</h3>
+        <button class="btn btn-close" id="close-predict">Tutup</button>
       </div>
       <div class="prediction-result-box">
         <p><strong>📌 Rata-rata 7 hari terakhir:</strong> ...</p>
-        <p><strong>🤖 Insight AI:</strong></p>
+        <p><strong>🤖 Insight Model Granite Instruct AI:</strong></p>
         <pre class="prediction-text">Output dari Granite AI...</pre>
       </div>
     </div>
@@ -158,23 +160,23 @@ const renderProducts = () => {
       const { value: formValues } = await Swal.fire({
         title: "Tambah Transaksi",
         html: `
-      <label for="swal-product" style="font-size:12px; display:block; text-align:left; margin-bottom:4px;">📦 Produk</label>
+      <label for="swal-product" style="font-size:12px; display:block; text-align:center; margin-bottom:4px;">📦 Produk</label>
       <select id="swal-product" class="swal2-input">
         ${products
           .map((p) => `<option value="${p.id}">${p.name}</option>`)
           .join("")}
       </select>
 
-      <label for="swal-date" style="font-size:12px; display:block; text-align:left; margin-top:10px; margin-bottom:4px;">📅 Tanggal Transaksi</label>
+      <label for="swal-date" style="font-size:12px; display:block; text-align:center; margin-top:10px; margin-bottom:4px;">📅 Tanggal Transaksi</label>
       <input id="swal-date" type="date" class="swal2-input" value="${getToday()}">
 
-      <label for="swal-in" style="font-size:12px; display:block; text-align:left; margin-top:10px; margin-bottom:4px;">📥 Jumlah Masuk</label>
+      <label for="swal-in" style="font-size:12px; display:block; text-align:center; margin-top:10px; margin-bottom:4px;">📥 Jumlah Masuk</label>
       <input id="swal-in" type="number" class="swal2-input" placeholder="0" min="0">
 
-      <label for="swal-out" style="font-size:12px; display:block; text-align:left; margin-top:10px; margin-bottom:4px;">📤 Jumlah Keluar</label>
+      <label for="swal-out" style="font-size:12px; display:block; text-align:center; margin-top:10px; margin-bottom:4px;">📤 Jumlah Keluar</label>
       <input id="swal-out" type="number" class="swal2-input" placeholder="0" min="0">
 
-      <label for="swal-exp" style="font-size:12px; display:block; text-align:left; margin-top:10px; margin-bottom:4px;">🕒 Tanggal Kadaluarsa</label>
+      <label for="swal-exp" style="font-size:12px; display:block; text-align:center; margin-top:10px; margin-bottom:4px;">🕒 Tanggal Kadaluarsa</label>
       <input id="swal-exp" type="date" class="swal2-input">
     `,
         focusConfirm: false,
@@ -424,8 +426,8 @@ const renderProducts = () => {
                 <td>${entry.balance}</td>
                 <td>${entry.expDate}</td>
                 <td>
-                  <button class="btn-edit-bincard" data-pid="${product.id}" data-index="${i}">✏️</button>
-                  <button class="btn-delete-bincard" data-pid="${product.id}" data-index="${i}">🗑️</button>
+                  <button class="btn btn-edit-bincard" data-pid="${product.id}" data-index="${i}">✏️</button>
+                  <button class="btn btn-delete-bincard" data-pid="${product.id}" data-index="${i}">🗑️</button>
                 </td>
               </tr>
             `
@@ -489,16 +491,16 @@ const renderProducts = () => {
           const { value: formValues } = await Swal.fire({
             title: "Edit Transaksi",
             html: `
-              <label for="swal-date" style="font-size: 12px; display:block; text-align:left; margin-bottom:4px;">📅 Tanggal Transaksi</label>
+              <label for="swal-date" style="font-size: 12px; display:block; text-align:center; margin-bottom:4px;">📅 Tanggal Transaksi</label>
               <input id="swal-date" type="date" class="swal2-input" value="${target.date}">
               
-              <label for="swal-in" style="font-size: 12px; display:block; text-align:left; margin-top:10px; margin-bottom:4px;">📥 Jumlah Masuk</label>
+              <label for="swal-in" style="font-size: 12px; display:block; text-align:center; margin-top:10px; margin-bottom:4px;">📥 Jumlah Masuk</label>
               <input id="swal-in" type="number" class="swal2-input" placeholder="Masuk" value="${target.in}">
               
-              <label for="swal-out" style="font-size: 12px; display:block; text-align:left; margin-top:10px; margin-bottom:4px;">📤 Jumlah Keluar</label>
+              <label for="swal-out" style="font-size: 12px; display:block; text-align:center; margin-top:10px; margin-bottom:4px;">📤 Jumlah Keluar</label>
               <input id="swal-out" type="number" class="swal2-input" placeholder="Keluar" value="${target.out}">
               
-              <label for="swal-exp" style="font-size: 12px; display:block; text-align:left; margin-top:10px; margin-bottom:4px;">🕒 Tanggal Expired</label>
+              <label for="swal-exp" style="font-size: 12px; display:block; text-align:center; margin-top:10px; margin-bottom:4px;">🕒 Tanggal Expired</label>
               <input id="swal-exp" type="date" class="swal2-input" value="${target.expDate}">
             `,
 
@@ -612,7 +614,7 @@ const renderProducts = () => {
         </div>
       </div>
       <div class="prediction-result-box">
-        <p><strong>🤖 Insight AI:</strong></p>
+        <p><strong>🤖 Insight Model Granite Instruct AI:</strong></p>
         <div class="prediction-text">Memproses insight dari AI...</div>
       </div>
     `;
@@ -628,14 +630,14 @@ const renderProducts = () => {
 
       box.innerHTML = `
       <div class="prediction-header">
-        <h3>📊 Prediksi Produk</h3>
+        <h3>📊 Prediksi Produk Mingguan</h3>
         <div>
-          <button class="btn-close" id="close-predict">Tutup<button>
+          <button class="btn btn-close" id="close-predict">Tutup</button>
         </div>
       </div>
       <div class="prediction-result-box">
         <p><strong>📉 Rata-rata:</strong> ${avg}</p>
-        <p><strong>🤖 Insight AI:</strong></p>
+        <p><strong>🤖 Insight Model Granite Instruct AI:</strong></p>
         <div class="prediction-text">${formatInsight(insight)}</div>
       </div>
     `;

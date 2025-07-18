@@ -93,22 +93,69 @@ table.dataTable tbody tr:hover {
 }
 
 /* style button */
+table.dataTable tbody td:last-child {
+  white-space: nowrap;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 5px;
+  justify-content: center;
+  align-items: center;
+}
+.btn-edit-product,
+.btn-delete-product,
+.btn-detail,
+.btn-predict {
+  white-space: nowrap;
+  min-width: 70px;
+}
 .btn {
   cursor: pointer;
-}
-
-.btn-add {
-  margin-top: 10px;
-  background-color: rgb(79, 79, 254);
-  color: white;
   padding: 8px 16px;
   border: none;
   border-radius: 6px;
   font-size: 14px;
   font-weight: 600;
+  color: #fff;
+}
+.btn-add {
+  margin-top: 10px;
+  background-color: rgb(45, 45, 249);
 }
 .btn-add:hover {
-  background-color: rgb(45, 45, 249);
+  background-color: rgb(24, 84, 133);
+}
+.btn-detail {
+  background-color: #065f06;
+}
+.btn-detail:hover {
+  background-color: #08990a;
+}
+.btn-edit-product {
+  background-color: #df7e00;
+}
+.btn-edit-product:hover {
+  background-color: #c9a400;
+}
+.btn-delete-product {
+  background-color: #dc2626;
+}
+.btn-delete-product:hover {
+  background-color: #f84444;
+}
+.btn-predict {
+  background-color: #c000b0;
+}
+.btn-predict:hover {
+  background-color: #b70b58;
+}
+.btn-close {
+  background-color: #f76223;
+  color: #e5ecfc;
+  border: none;
+  font-weight: 600;
+}
+.btn-close:hover {
+  background-color: #824925;
 }
 
 /* form transaksi */
