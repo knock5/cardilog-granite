@@ -1,6 +1,7 @@
 import "./style.css";
 import $ from "jquery";
 import Swal from "sweetalert2";
+import moment from "moment";
 import "datatables.net";
 import "datatables.net-dt/css/dataTables.dataTables.min.css";
 import { dummyProducts } from "./data/products";
@@ -74,59 +75,46 @@ const renderProducts = () => {
       <h1>CardiLog</h1>
     </div>
 
-    <div class="center-btn">
-      <button id="add-transaction-btn" class="btn-add">+ Tambah Transaksi</button>
+    <div class="flex center">
+      <button id="add-transaction-btn" class="btn btn-add">+ Tambah Transaksi</button>
     </div>
 
-    <!-- Bungkus hanya bagian table -->
-    <div class="dataTables_wrapper">
-      <div class="table-container">
-        <table id="product-table" class="display dataTable">
-          <thead>
+    <div class="table-container">
+      <table id="product-table" class="display dataTable sticky-header">
+        <thead>
+          <tr>
+            <th>ID</th><th>Nama</th><th>Packing</th><th>Unit</th><th>Consumption</th><th>Balance</th><th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${products
+            .map(
+              (p) => `
             <tr>
-              <th>ID</th>
-              <th>Nama</th>
-              <th>Packing</th>
-              <th>Unit</th>
-              <th>Consumption</th>
-              <th>Balance</th>
-              <th>Aksi</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${products
-              .map(
-                (p) => `
-              <tr>
-                <td>${p.id}</td>
-                <td>${p.name}</td>
-                <td>${p.packing}</td>
-                <td>${p.unit}</td>
-                <td>${p.consumption}</td>
-                <td>${p.binCard.at(-1)?.balance || 0}</td>
-                <td>
-                  <button class="btn-detail" data-id="${
-                    p.id
-                  }">Lihat Detail</button>
-                  <button class="btn-edit-product" data-id="${
-                    p.id
-                  }">Edit</button>
-                  <button class="btn-delete-product" data-id="${
-                    p.id
-                  }">Hapus</button>
-                  <button class="btn-predict" data-id="${p.id}">
-                    Prediksi <span class="loading-spinner" id="loading-predict" style="display: none;"></span>
-                  </button>
-                </td>
-              </tr>
-            `
-              )
-              .join("")}
-          </tbody>
-        </table>
-      </div>
+              <td>${p.id}</td><td>${p.name}</td><td>${p.packing}</td><td>${
+                p.unit
+              }</td><td>${p.consumption}</td><td>${
+                p.binCard.at(-1)?.balance || 0
+              }</td>
+              <td>
+                <button class="btn-detail" data-id="${
+                  p.id
+                }">Lihat Detail</button>
+                <button class="btn-edit-product" data-id="${p.id}">Edit</button>
+                <button class="btn-delete-product" data-id="${
+                  p.id
+                }">Hapus</button>
+                <button class="btn-predict" data-id="${
+                  p.id
+                }">Prediksi <span class="loading-spinner" style="display: none;"></span></button>
+              </td>
+            </tr>`
+            )
+            .join("")}
+        </tbody>
+      </table>
     </div>
-
+    
     <div id="prediction-result" class="detail-box prediction-box" style="display: none;">
       <div class="prediction-header">
         <h3>📊 Prediksi Produk</h3>
@@ -252,7 +240,26 @@ const renderProducts = () => {
       }
     });
 
-  $("#product-table").DataTable();
+  $("#product-table").DataTable({
+    order: [[0, "desc"]],
+    scrollX: true,
+    scrollCollapse: true,
+    autoWidth: true,
+    columnDefs: [
+      {
+        targets: "_all",
+        className: "dt-center",
+      },
+      {
+        targets: 0,
+        orderable: false,
+      },
+      {
+        targets: 5,
+        orderable: false,
+      },
+    ],
+  });
 
   // Edit produk
   document.querySelectorAll(".btn-edit-product").forEach((btn) => {
@@ -496,7 +503,34 @@ const renderProducts = () => {
       detailBox.style.display = "block";
 
       // Re-inisialisasi datatable detail
-      $("#detail-table").DataTable();
+      $("#detail-table").DataTable({
+        order: [[0, "desc"]],
+        scrollX: true,
+        scrollCollapse: true,
+        autoWidth: false,
+        columnDefs: [
+          {
+            targets: "_all",
+            className: "dt-center",
+          },
+          {
+            targets: 5,
+            orderable: false,
+          },
+          {
+            targets: 0,
+            render: (data) => {
+              return moment(data).format("DD/MM/YYYY");
+            },
+          },
+          {
+            targets: 4,
+            render: (data) => {
+              return data ? moment(data).format("DD/MM/YYYY") : "Tidak ada";
+            },
+          },
+        ],
+      });
     });
   });
 

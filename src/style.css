@@ -22,29 +22,22 @@ body {
 .flex {
   display: flex;
 }
+.center {
+  justify-content: center;
+  align-items: center;
+}
 
 .brand-wrap {
   justify-content: center;
   border-bottom: 1px solid #d1d5db;
 }
 
-/* data table */
-.table-container {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
 table.dataTable {
-  width: 100%;
   border-collapse: collapse;
-  margin-top: 1rem;
-  background-color: white;
-  border-radius: 6px;
-  overflow: hidden;
+  background-color: var(--light-color);
   font-size: 14px;
   min-width: 600px;
 }
-
 table.dataTable thead tr th {
   background-color: var(--primary-color);
   color: #fff;
@@ -52,23 +45,19 @@ table.dataTable thead tr th {
   font-weight: 600;
   border-bottom: 1px solid #ddd;
 }
-
 table.dataTable tbody td {
   padding: 10px 12px;
   border-bottom: 1px solid #e5e7eb;
   text-align: center;
   color: #111827;
 }
-
 table.dataTable tbody td:nth-child(1) {
   font-weight: 600;
   color: #374151;
 }
-
 table.dataTable tbody tr:hover {
   background-color: #f3f4f6;
 }
-
 /* DataTables UI */
 .dataTables_wrapper .dataTables_filter input,
 .dataTables_wrapper .dataTables_length select {
@@ -77,11 +66,9 @@ table.dataTable tbody tr:hover {
   border-radius: 4px;
   margin-left: 0.5em;
 }
-
 .dataTables_wrapper .dataTables_paginate {
-  margin-top: 1rem;
+  margin-top: 1.5rem;
 }
-
 .dataTables_wrapper .dataTables_paginate .paginate_button {
   background: #e5e7eb;
   border: none;
@@ -90,46 +77,38 @@ table.dataTable tbody tr:hover {
   border-radius: 4px;
   cursor: pointer;
 }
-
 .dataTables_wrapper .dataTables_paginate .paginate_button.current {
   background: var(--primary-color);
   color: #fff !important;
 }
-
 /* Detail Bin Card Table */
 #detail-table thead th,
 #detail-table tbody td:nth-child(n + 2),
 #detail-table tbody td:nth-child(1) {
   text-align: center;
 }
-
 #detail-table tbody td:nth-child(1) {
   font-weight: 600;
   color: #1f2937;
 }
 
-.center-btn {
-  display: flex;
-  justify-content: center;
-  margin: 1.5rem 0;
+/* style button */
+.btn {
+  cursor: pointer;
 }
 
 .btn-add {
-  background-color: var(--dark-color);
-  color: #fff;
-  font-size: 16px;
-  font-weight: 600;
-  padding: 10px 20px;
+  margin-top: 10px;
+  background-color: rgb(79, 79, 254);
+  color: white;
+  padding: 8px 16px;
   border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.2s ease, transform 0.1s ease;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
 }
-
 .btn-add:hover {
-  background-color: #0c400a;
-  transform: scale(1.03);
+  background-color: rgb(45, 45, 249);
 }
 
 /* form transaksi */
@@ -194,19 +173,6 @@ table.dataTable tbody tr:hover {
   color: #111827;
 }
 
-.btn-detail {
-  padding: 6px 12px;
-  background-color: var(--dark-color);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.btn-detail:hover {
-  background-color: #0c400a;
-}
-
 /* modal */
 .modal {
   position: fixed;
@@ -235,31 +201,6 @@ table.dataTable tbody tr:hover {
 
 .modal-actions button {
   margin-left: 10px;
-}
-
-/* tombol aksi */
-.btn-edit-product,
-.btn-delete-product,
-.btn-edit-bincard,
-.btn-delete-bincard {
-  font-size: 12px;
-  margin: 0 2px;
-  padding: 4px 8px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.btn-edit-product,
-.btn-edit-bincard {
-  background-color: var(--secondary-color);
-  color: #000;
-}
-
-.btn-delete-product,
-.btn-delete-bincard {
-  background-color: #dc2626;
-  color: white;
 }
 
 /* prediction & insight */
@@ -366,21 +307,6 @@ table.dataTable tbody tr:hover {
   margin-bottom: 1rem;
 }
 
-.btn-close {
-  background: #f87171;
-  color: white;
-  border: none;
-  padding: 6px 10px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 12px;
-  transition: background 0.2s ease;
-}
-
-.btn-close:hover {
-  background: #ef4444;
-}
-
 /* spinner */
 .loading-spinner {
   width: 12px;
@@ -448,15 +374,6 @@ table.dataTable tbody tr:hover {
   .modal-content {
     padding: 1rem;
     margin: 0.5rem;
-  }
-
-  .table-container {
-    overflow-x: auto;
-  }
-
-  table.dataTable {
-    font-size: 12px;
-    min-width: 600px;
   }
 
   .btn-add {
