@@ -1,5 +1,7 @@
 const path = require("path");
+const copyWebpackPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const workboxWebpackPlugin = require("workbox-webpack-plugin");
 const webpack = require("webpack");
 
 module.exports = {
@@ -39,10 +41,27 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: "./public/index.html",
     }),
+    new copyWebpackPlugin({
+      patterns: [
+        {
+          from: path.resolve(__dirname, "public/img"),
+          to: "img",
+        },
+        {
+          from: path.resolve(__dirname, "public/manifest.json"),
+          to: ".",
+        },
+      ],
+    }),
     new webpack.ProvidePlugin({
       $: "jquery",
       jQuery: "jquery",
       "window.jQuery": "jquery",
+    }),
+    new workboxWebpackPlugin.GenerateSW({
+      clientsClaim: true,
+      skipWaiting: true,
+      maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5 MB
     }),
   ],
   mode: "development",
