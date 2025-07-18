@@ -70,9 +70,9 @@ const renderProducts = () => {
   const container = document.getElementById("app");
 
   container.innerHTML = `
-  <div class="brand-wrap flex">
-    <h1>CardiLog</h1>
-  </div>
+    <div class="brand-wrap flex">
+      <h1>CardiLog</h1>
+    </div>
 
     <div class="center-btn">
       <button id="add-transaction-btn" class="btn-add">+ Tambah Transaksi</button>
@@ -111,45 +111,54 @@ const renderProducts = () => {
       <button id="submit-transaction">Simpan</button>
     </div>
 
-    <table id="product-table" class="display dataTable">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Nama</th>
-          <th>Packing</th>
-          <th>Unit</th>
-          <th>Consumption</th>
-          <th>Balance</th>
-          <th>Aksi</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${products
-          .map(
-            (p) => `
-          <tr>
-            <td>${p.id}</td>  
-            <td>${p.name}</td>
-            <td>${p.packing}</td>
-            <td>${p.unit}</td>
-            <td>${p.consumption}</td>
-            <td>${p.binCard.at(-1)?.balance || 0}</td>
-            <td>
-              <button class="btn-detail" data-id="${p.id}">Lihat Detail</button>
-              <button class="btn-edit-product" data-id="${p.id}">Edit</button>
-              <button class="btn-delete-product" data-id="${
-                p.id
-              }">Hapus</button>
-              <button class="btn-predict" data-id="${p.id}">
-                Prediksi <span class="loading-spinner" id="loading-predict" style="display: none;"></span>
-              </button>
-            </td>
-          </tr>
-        `
-          )
-          .join("")}
-      </tbody>
-    </table>
+    <!-- Bungkus hanya bagian table -->
+    <div class="dataTables_wrapper">
+      <div class="table-container">
+        <table id="product-table" class="display dataTable">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nama</th>
+              <th>Packing</th>
+              <th>Unit</th>
+              <th>Consumption</th>
+              <th>Balance</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${products
+              .map(
+                (p) => `
+              <tr>
+                <td>${p.id}</td>
+                <td>${p.name}</td>
+                <td>${p.packing}</td>
+                <td>${p.unit}</td>
+                <td>${p.consumption}</td>
+                <td>${p.binCard.at(-1)?.balance || 0}</td>
+                <td>
+                  <button class="btn-detail" data-id="${
+                    p.id
+                  }">Lihat Detail</button>
+                  <button class="btn-edit-product" data-id="${
+                    p.id
+                  }">Edit</button>
+                  <button class="btn-delete-product" data-id="${
+                    p.id
+                  }">Hapus</button>
+                  <button class="btn-predict" data-id="${p.id}">
+                    Prediksi <span class="loading-spinner" id="loading-predict" style="display: none;"></span>
+                  </button>
+                </td>
+              </tr>
+            `
+              )
+              .join("")}
+          </tbody>
+        </table>
+      </div>
+    </div>
 
     <div id="prediction-result" class="detail-box prediction-box" style="display: none;">
       <div class="prediction-header">
@@ -165,6 +174,7 @@ const renderProducts = () => {
 
     <div id="detail-view" class="detail-box" style="display: none;"></div>
 
+    <!-- Modal edit produk -->
     <div id="edit-product-modal" class="modal" style="display: none;">
       <div class="modal-content">
         <h3>Edit Produk</h3>
@@ -182,7 +192,8 @@ const renderProducts = () => {
         </div>
       </div>
     </div>
-    
+
+    <!-- Modal edit bin card -->
     <div id="edit-bin-modal" class="modal" style="display: none;">
       <div class="modal-content">
         <h3>Edit Transaksi</h3>
@@ -200,7 +211,6 @@ const renderProducts = () => {
         </div>
       </div>
     </div>
-
   `;
 
   document
@@ -263,20 +273,42 @@ const renderProducts = () => {
 
   // Edit produk
   document.querySelectorAll(".btn-edit-product").forEach((btn) => {
-    btn.addEventListener("click", () => {
+    btn.addEventListener("click", async () => {
       const pid = parseInt(btn.getAttribute("data-id"));
       const products = getProducts();
       const product = products.find((p) => p.id === pid);
       if (!product) return;
 
-      // Isi form
-      document.getElementById("edit-prod-name").value = product.name;
-      document.getElementById("edit-prod-pack").value = product.packing;
-      document.getElementById("edit-prod-unit").value = product.unit;
-      document.getElementById("edit-prod-cons").value = product.consumption;
+      const { value: formValues } = await Swal.fire({
+        title: "Edit Produk",
+        html: `
+          <input id="swal-name" class="swal2-input" placeholder="Nama Produk" value="${product.name}">
+          <input id="swal-pack" class="swal2-input" placeholder="Packing" value="${product.packing}">
+          <input id="swal-unit" class="swal2-input" placeholder="Unit" value="${product.unit}">
+          <input id="swal-cons" class="swal2-input" placeholder="Consumption" value="${product.consumption}">
+        `,
+        focusConfirm: false,
+        showCancelButton: true,
+        confirmButtonText: "Simpan",
+        preConfirm: () => {
+          return {
+            name: document.getElementById("swal-name").value,
+            packing: document.getElementById("swal-pack").value,
+            unit: document.getElementById("swal-unit").value,
+            consumption: document.getElementById("swal-cons").value,
+          };
+        },
+      });
 
-      document.getElementById("save-edit-prod").dataset.id = pid;
-      document.getElementById("edit-product-modal").style.display = "flex";
+      if (formValues) {
+        product.name = formValues.name.trim();
+        product.packing = formValues.packing.trim();
+        product.unit = formValues.unit.trim();
+        product.consumption = formValues.consumption.trim();
+        saveProducts(products);
+        renderProducts();
+        Swal.fire("Berhasil", "Produk diperbarui", "success");
+      }
     });
   });
 

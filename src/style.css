@@ -6,13 +6,34 @@ html {
   box-sizing: border-box;
 }
 
+:root {
+  --primary-color: #f97a00;
+  --secondary-color: #fff4a4;
+  --light-color: #fff4a4;
+  --dark-color: #16610e;
+}
+
 body {
   font-family: sans-serif;
   padding: 2rem;
   background-color: #e6e6e6;
 }
 
+.flex {
+  display: flex;
+}
+
+.brand-wrap {
+  justify-content: center;
+  border-bottom: 1px solid #d1d5db;
+}
+
 /* data table */
+.table-container {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 table.dataTable {
   width: 100%;
   border-collapse: collapse;
@@ -21,11 +42,12 @@ table.dataTable {
   border-radius: 6px;
   overflow: hidden;
   font-size: 14px;
+  min-width: 600px;
 }
 
 table.dataTable thead tr th {
-  background-color: #1f2937;
-  color: #f9fafb;
+  background-color: var(--primary-color);
+  color: #fff;
   text-align: center;
   font-weight: 600;
   border-bottom: 1px solid #ddd;
@@ -70,7 +92,7 @@ table.dataTable tbody tr:hover {
 }
 
 .dataTables_wrapper .dataTables_paginate .paginate_button.current {
-  background: #1f2937;
+  background: var(--primary-color);
   color: #fff !important;
 }
 
@@ -93,7 +115,7 @@ table.dataTable tbody tr:hover {
 }
 
 .btn-add {
-  background-color: #2563eb;
+  background-color: var(--dark-color);
   color: #fff;
   font-size: 16px;
   font-weight: 600;
@@ -106,7 +128,7 @@ table.dataTable tbody tr:hover {
 }
 
 .btn-add:hover {
-  background-color: #1e40af;
+  background-color: #0c400a;
   transform: scale(1.03);
 }
 
@@ -145,7 +167,7 @@ table.dataTable tbody tr:hover {
 
 #submit-transaction {
   padding: 10px 16px;
-  background-color: #1f2937;
+  background-color: var(--primary-color);
   color: white;
   border: none;
   border-radius: 6px;
@@ -153,7 +175,7 @@ table.dataTable tbody tr:hover {
 }
 
 #submit-transaction:hover {
-  background-color: #111827;
+  background-color: #c96100;
 }
 
 /* detail box */
@@ -174,7 +196,7 @@ table.dataTable tbody tr:hover {
 
 .btn-detail {
   padding: 6px 12px;
-  background-color: #4b5563;
+  background-color: var(--dark-color);
   color: white;
   border: none;
   border-radius: 4px;
@@ -182,7 +204,7 @@ table.dataTable tbody tr:hover {
 }
 
 .btn-detail:hover {
-  background-color: #1f2937;
+  background-color: #0c400a;
 }
 
 /* modal */
@@ -230,8 +252,8 @@ table.dataTable tbody tr:hover {
 
 .btn-edit-product,
 .btn-edit-bincard {
-  background-color: #eab308;
-  color: white;
+  background-color: var(--secondary-color);
+  color: #000;
 }
 
 .btn-delete-product,
@@ -322,16 +344,16 @@ table.dataTable tbody tr:hover {
 
 .prediction-item.numbered {
   padding-left: 4px;
-  border-left: 3px solid #3b82f6;
-  background-color: #eff6ff;
+  border-left: 3px solid var(--primary-color);
+  background-color: #fff7ec;
   border-radius: 4px;
   padding: 6px 12px;
 }
 
 .prediction-item.highlight {
-  background-color: #fef9c3;
+  background-color: var(--light-color);
   padding: 6px 12px;
-  border-left: 4px solid #facc15;
+  border-left: 4px solid var(--primary-color);
   border-radius: 4px;
   font-weight: 600;
 }
@@ -381,6 +403,44 @@ table.dataTable tbody tr:hover {
   }
 }
 
+/* SweetAlert2 Custom Styling */
+.swal2-popup {
+  font-size: 13px !important;
+  font-family: sans-serif;
+  border-radius: 8px;
+}
+
+.swal2-title {
+  font-size: 16px !important;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.swal2-input {
+  font-size: 13px !important;
+  padding: 8px 10px !important;
+  border-radius: 4px;
+  border: 1px solid #d1d5db;
+  color: #111827;
+}
+
+.swal2-confirm,
+.swal2-cancel {
+  font-size: 13px !important;
+  padding: 6px 14px !important;
+  border-radius: 6px;
+}
+
+.swal2-confirm {
+  background-color: var(--primary-color) !important;
+  color: white !important;
+}
+
+.swal2-cancel {
+  background-color: #9ca3af !important;
+  color: white !important;
+}
+
 /* responsive */
 @media (max-width: 600px) {
   .form-box,
@@ -390,8 +450,13 @@ table.dataTable tbody tr:hover {
     margin: 0.5rem;
   }
 
+  .table-container {
+    overflow-x: auto;
+  }
+
   table.dataTable {
     font-size: 12px;
+    min-width: 600px;
   }
 
   .btn-add {
