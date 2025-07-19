@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: cardilog-granite
+    env: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: node server/server.js
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: REPLICATE_API_TOKEN
+        value: enter-your-api-key-here
