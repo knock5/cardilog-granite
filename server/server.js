@@ -15,6 +15,12 @@ const replicate = new Replicate({ auth: process.env.REPLICATE_API_TOKEN });
 
 app.post("/api/granite", async (req, res) => {
   const { prompt } = req.body;
+  console.log("[DEBUG] Prompt diterima:", prompt);
+  console.log(
+    "[DEBUG] Token tersedia:",
+    process.env.REPLICATE_API_TOKEN ? "YES" : "NO"
+  );
+
   try {
     const output = await replicate.run("ibm-granite/granite-3.3-8b-instruct", {
       input: {
@@ -27,6 +33,7 @@ app.post("/api/granite", async (req, res) => {
     });
     res.json({ success: true, data: output.join("") });
   } catch (err) {
+    console.error("[ERROR] Granite failed:", err.message);
     res.status(500).json({ success: false, error: err.message });
   }
 });
