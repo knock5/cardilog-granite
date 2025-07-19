@@ -1,12 +1,16 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const Replicate = require("replicate");
+const path = require("path");
 const bodyParser = require("body-parser");
 
 dotenv.config();
 const app = express();
+const PORT = process.env.PORT || 3000;
+
 app.use(bodyParser.json());
 
+// Init API Granite
 const replicate = new Replicate({ auth: process.env.REPLICATE_API_TOKEN });
 
 app.post("/api/granite", async (req, res) => {
@@ -27,4 +31,15 @@ app.post("/api/granite", async (req, res) => {
   }
 });
 
-app.listen(3000, () => console.log("Server running on http://localhost:3000"));
+// serve hasil build (frontend)
+const distPath = path.join(__dirname, "../dist");
+app.use(express.static(distPath));
+
+// fallback untuk SPA
+app.get(/^\/(?!api).*/, (req, res) => {
+  res.sendFile(path.join(distPath, "index.html"));
+});
+
+app.listen(PORT, () => {
+  console.log(`Server berjalan di http://localhost:${PORT}`);
+});

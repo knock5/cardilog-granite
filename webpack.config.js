@@ -1,7 +1,7 @@
 const path = require("path");
-const copyWebpackPlugin = require("copy-webpack-plugin");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const workboxWebpackPlugin = require("workbox-webpack-plugin");
+const WorkboxWebpackPlugin = require("workbox-webpack-plugin");
 const webpack = require("webpack");
 
 module.exports = {
@@ -11,17 +11,7 @@ module.exports = {
     path: path.resolve(__dirname, "dist"),
     clean: true,
   },
-  devServer: {
-    static: "./dist",
-    port: 8008,
-    open: true,
-    proxy: [
-      {
-        context: ["/api"],
-        target: "http://localhost:3000",
-      },
-    ],
-  },
+  mode: "production",
   module: {
     rules: [
       {
@@ -41,7 +31,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: "./public/index.html",
     }),
-    new copyWebpackPlugin({
+    new CopyWebpackPlugin({
       patterns: [
         {
           from: path.resolve(__dirname, "public/img"),
@@ -58,11 +48,10 @@ module.exports = {
       jQuery: "jquery",
       "window.jQuery": "jquery",
     }),
-    new workboxWebpackPlugin.GenerateSW({
+    new WorkboxWebpackPlugin.GenerateSW({
       clientsClaim: true,
       skipWaiting: true,
-      maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5 MB
+      maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
     }),
   ],
-  mode: "development",
 };
