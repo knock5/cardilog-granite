@@ -13,6 +13,7 @@ Pendekatan yang digunakan dalam proyek ini melibatkan:
 - Analisis tren pemakaian stok barang menggunakan **Moving Average**
 - Pemanfaatan model **IBM Granite AI** untuk memberikan rekomendasi dan insight
 - Deployment menggunakan 2 platform yakni <a href="https://render.com/" target="_blank" rel="noopener noreferrer">onrender</a> untuk frontend dan <a href="https://fly.io/" target="_blank" rel="noopener noreferrer">fly.io</a> untuk backend server
+  > Fitur insight AI mungkin membutuhkan waktu untuk melakukan request ke API dan bisa juga gagal mendapatkan respon dikarenakan memori model dan layanan deployment yang terbatas. Coba beberapa kali hingga bisa.
 
 ---
 
