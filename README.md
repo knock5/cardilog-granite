@@ -112,6 +112,7 @@ PORT=NUMBER_PORT
 
 ## 📂 Struktur Folder
 
+```
 cardilog-granite/
 ├── public/
 │ └── index.html
@@ -127,6 +128,7 @@ cardilog-granite/
 ├── package.json
 ├── README.md
 └── webpack.config.js
+```
 
 ## 👨‍💻 Kontributor
 
