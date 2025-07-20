@@ -1,4 +1,4 @@
-const API_URL = "https://be-cardilog-granite.fly.dev/api/granite";
+const API_URL = process.env.API_URL;
 
 export async function askGranite(prompt) {
   try {
