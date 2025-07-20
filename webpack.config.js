@@ -67,5 +67,5 @@ module.exports = {
       "process.env.API_URL": JSON.stringify(process.env.API_URL),
     }),
   ],
-  mode: "development",
+  mode: process.env.NODE_ENV || "development",
 };
