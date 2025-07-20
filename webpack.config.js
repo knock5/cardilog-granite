@@ -63,6 +63,9 @@ module.exports = {
       skipWaiting: true,
       maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5 MB
     }),
+    new webpack.DefinePlugin({
+      "process.env.API_URL": JSON.stringify(process.env.API_URL),
+    }),
   ],
   mode: "development",
 };
