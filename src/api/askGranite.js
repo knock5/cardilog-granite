@@ -1,21 +1,17 @@
-export const askGranite = async (prompt) => {
+const API_URL = "https://be-cardilog-granite.fly.dev/api/granite";
+
+export async function askGranite(prompt) {
   try {
-    const res = await fetch("/api/granite", {
+    const response = await fetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ prompt }),
     });
 
-    const result = await res.json();
-
-    if (!result.success || !result.data) {
-      console.warn("Granite response invalid:", result);
-      return { output: "Granite tidak memberikan hasil." };
-    }
-
-    return { output: result.data };
-  } catch (err) {
-    console.error("Error from askGranite:", err);
-    return { output: "Terjadi kesalahan saat menghubungi AI." };
+    const result = await response.json();
+    return result.data || "Tidak ada respons dari AI.";
+  } catch (error) {
+    console.error("Error memanggil Granite API:", error);
+    return "Terjadi kesalahan saat memanggil AI.";
   }
-};
+}
