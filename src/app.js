@@ -84,7 +84,7 @@ const renderProducts = () => {
     </div>
 
     <div class="table-container">
-      <table id="product-table" class="display dataTable sticky-header">
+      <table id="product-table" class="display dataTable">
         <thead>
           <tr>
             <th>ID</th><th>Nama</th><th>Packing</th><th>Unit</th><th>Consumption</th><th>Balance</th><th>Aksi</th>
@@ -277,6 +277,23 @@ const renderProducts = () => {
           };
         },
       });
+
+      // Validasi input data kosong
+      if (!formValues.name.trim()) {
+        Swal.fire("Error", "Nama produk tidak boleh kosong.", "error");
+        return;
+      }
+      if (!formValues.packing.trim()) {
+        Swal.fire("Error", "Packing tidak boleh kosong.", "error");
+        return;
+      }
+      if (!formValues.unit.trim()) {
+        Swal.fire("Error", "Unit tidak boleh kosong.", "error");
+        return;
+      }
+      if (!formValues.consumption.trim()) {
+        formValues.consumption = "0";
+      }
 
       if (formValues) {
         const products = getProducts();
@@ -572,7 +589,7 @@ const renderProducts = () => {
         order: [[0, "desc"]],
         scrollX: true,
         scrollCollapse: true,
-        autoWidth: false,
+        autoWidth: true,
         columnDefs: [
           {
             targets: "_all",
@@ -615,7 +632,7 @@ const renderProducts = () => {
       <div class="prediction-header">
         <h3>📊 Prediksi Produk</h3>
         <div>
-          <button class="btn-close" id="close-predict">Tutup</button>
+          <button class="btn btn-close" id="close-predict">Tutup</button>
         </div>
       </div>
       <div class="prediction-result-box">
